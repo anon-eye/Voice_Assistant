@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ano - Voice Assistant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000;
+        }
+        .btn-container {
+            position: relative;
+            
+            display: inline-block;
+        }
+
+        .glow-btn {
+            position: relative;
+            font-size: 15px;
+            padding: 20px 20px;
+            background: #222;
+            color: white;
+            border: none;
+            outline: none;
+            cursor: pointer;         
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 10px;
+            transition: 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            border-radius:50%;
+            
+        }
+
+        /* 3D effect */
+        .glow-btn:active {
+            transform: scale(4);
+        }
+
+        /* RGB border animation */
+        .glowing-border {
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            width: calc(100% + 20px);
+            height: calc(100% + 20px);
+            border-radius: 50%;
+            background: linear-gradient(45deg, red, yellow, green, cyan, blue, magenta, red);
+            background-size: 500%;
+            animation: rgbGlow 3s linear infinite;
+            filter: blur(20px);
+            opacity: 0;
+            transition: opacity 1s;
+        }
+
+        @keyframes rgbGlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        #status {
+            margin-top: 20px;
+            font-size: 16px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="btn-container">
+        <div class="glowing-border"></div>
+        <button class="glow-btn" onclick="startListening()">🎙️</button>
+    </div>
+    <p id="status">Waiting for command...</p>
+    <a href="menu.html">Say "help" or click to open the help menu</a>
+    <a href="feedback.html">say feedback or click to send feedback </a>
+
+    <script>
+        
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        const synth = window.speechSynthesis;
+        const glowBorder = document.querySelector(".glowing-border");
+        
+        function startListening() {
+            document.getElementById('status').innerText = "Listening...";
+            glowBorder.style.opacity = "1"; // Start glow effect
+            recognition.start();
+        }
+
+        recognition.onresult = (event) => {
+            const command = event.results[0][0].transcript.toLowerCase();
+            document.getElementById('status').innerText = `You said: "${command}"`;
+            handleCommand(command);
+        };
+
+        function handleCommand(command) {
+            if (command.includes("hello")) {
+                speak("Hello! How can I assist you?");
+            } else if (command.includes("what is the time")) {
+                speak("The current time is " + new Date().toLocaleTimeString());
+            } else if (command.includes("my location")) {
+                showLocation();
+                speak("Fetching your location...");
+            } else if (command.includes("wheather condition")) {
+                speak("Checking the weather for you.");
+                window.open("https://www.google.com/search?q=weather", "_blank");
+            } else if (command.includes("open youtube")) {
+                speak("Opening YouTube...");
+                window.open("https://youtube.com");
+            } else if (command.includes("open whatsapp")) {
+                speak("Opening WhatsApp...");
+                window.open("https://whatsapp.com");
+            } else if (command.includes("open google")) {
+                speak("Opening Google...");
+                window.open("https://google.com");
+            } else if (command.includes("open chat gpt")) {
+                speak("Opening ChatGPT...");
+                window.open("https://chat.openai.com");
+            } else if (command.includes("search a image of")) {
+                const query = command.replace("search a image of ", "image of ").trim();
+                speak(`Searching image on  Google for ${query}`);
+                window.open(`https://www.google.com/search?q=${query}`);
+            } else if (command.includes("search on google for")) {
+                const query = command.replace("search on google for", "").trim();
+                speak(`Searching Google for ${query}`);
+                window.open(`https://www.google.com/search?q=${query}`);
+            } else if (command.includes("hindi meaning of")) {
+                const query = command.replace("hindi meaning of", "hindi meaning of ").trim();
+                speak(`Searching hindi meaning of ${query}`);
+                window.open(`https://www.google.com/search?q=${query}`);
+            } else if (command.includes("download")) {
+                const query = command.replace("download", "direct link to download ").trim();
+                speak(`getting direct link to download your ${query}`);
+                window.open(`https://chat.openai.com/?q=${encodeURIComponent(query)}`);
+           } else if (command.includes("search on youtube for")) {
+                const query = command.replace("search on youtube for", "").trim();
+                speak(`Searching YouTube for ${query}`);
+                window.open(`https://www.youtube.com/results?search_query=${query}`);
+            } else if (command.includes("make a image of ")) {
+                const query = command.replace("make a image of", "make a  image of ").trim();
+                speak(`genrating images on ChatGPT for ${query}`);
+                window.open(`https://chat.openai.com/?q=${encodeURIComponent(query)}`);
+            } else if (command.includes("answer of question")) {
+                const query = command.replace("answer of question", "give me sutable answer [according to the class 10 cbse board syllabus] in systematic way including headings, subheadings, key points,with important points and important details, a matrix table, and a flowchart ,incident with conclusion and summary,  and a deep search results on topic of - ").trim();
+                speak(`giving answers for ${query}`);
+                window.open(`https://chat.openai.com/?q=${encodeURIComponent(query)}`);
+            } else if (command.includes("study notes")) {
+                const query = command.replace("study notes", "make  sutable notes in systematic way including headings, subheadings, key points,with important points and important details, a matrix table, and a flowchart ,incident with conclusion and summary,  and a deep search results on topic of - ").trim();
+                speak(`making study notes for ${query}`);
+                window.open(`https://chat.openai.com/?q=${encodeURIComponent(query)}`);
+            } else if (command.includes("search on chat gpt for")) {
+                const query = command.replace("search on chat gpt for", "give me sutable answer with important points and incident with conclusion and summary for question -: ").trim();
+                speak(`Searching ChatGPT for ${query}`);
+                window.open(`https://chat.openai.com/?q=${encodeURIComponent(query)}`);
+            } else if (command.includes("deep search")) {
+                const query = command.replace("deep search", " give me the information [include summery , points, important key words , short summery , theme ] about-:").trim();
+                speak(`deep Searching for ${query}`);
+                window.open(`https://chat.deepseek.com/?q=${encodeURIComponent(query)}`);
+            } else if (command.includes("calculate")) {
+                const equation = command.replace("calculate", "Calculate the equation and also give me step for equation - ").trim();
+                speak(`Calculating ${equation}`);
+                window.open(`https://chat.openai.com/?q=${encodeURIComponent(equation)}`);
+            } else if (command.includes("help")) {
+                speak("Opening the help page.");
+                window.open("menu.html"); // Replace with actual help page link
+            } else if (command.includes("feedback")) {
+                speak("Opening the feedback page.");
+                window.open("feedback.html");
+            } else {
+                speak("I'm not sure about that, let me search for it.");
+                window.open(`https://chat.openai.com/?q=${encodeURIComponent(command)}`);
+            }
+        }
+
+
+        function speak(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            
+            // Set a robotic voice if available
+            const voices = synth.getVoices();
+            const robotVoice = voices.find(voice => voice.name.includes("Google UK English Male") || voice.name.includes("Daniel") || voice.name.includes("Alex"));
+            if (robotVoice) {
+                utterance.voice = robotVoice;
+            }
+            
+            synth.speak(utterance);
+        }
+
+        recognition.onend = () => {
+            document.getElementById('status').innerText = "Waiting for command... Click to start listening again.";
+            glowBorder.style.opacity = "0"; // Stop glow effect when recognition ends
+        };
+
+        function showLocation() {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    const mapUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+                    speak("Showing your location on Google Maps.");
+                    window.open(mapUrl);
+                }, () => {
+                    speak("Sorry, I couldn't get your location. Please enable location services.");
+                });
+            } else {
+                speak("Geolocation is not supported on this device.");
+            }
+        }
+    </script>
+</body>
+</html>
